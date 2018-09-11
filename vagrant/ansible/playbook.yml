@@ -1,0 +1,16 @@
+- hosts: all
+  become: true
+  tasks:
+#    - name: yum update
+#      yum:
+#        name: '*'
+#        state: latest
+#        update_cache: yes
+#
+    - name: disable selinux
+      selinux:
+        state: disabled
+
+    - name: set timezone to Asia/Tokyo
+      timezone:
+        name: Asia/Tokyo
