@@ -1,0 +1,8 @@
+FROM zabbix/zabbix-web-nginx-mysql:alpine-3.4-latest
+
+COPY ["./fonts/ipaexg.ttf", "/tmp/"]
+
+RUN mkdir /usr/share/fonts/IPAexfont && \
+    mv /tmp/ipaexg.ttf /usr/share/fonts/IPAexfont && \
+    unlink /usr/share/zabbix/fonts/graphfont.ttf && \
+    ln -s /usr/share/fonts/IPAexfont/ipaexg.ttf /usr/share/zabbix/fonts/graphfont.ttf
