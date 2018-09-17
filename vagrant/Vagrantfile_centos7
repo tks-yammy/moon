@@ -4,7 +4,7 @@ config.vm.box = "centos/7"
 #config.disksize.size = '40GB'
 
   config.ssh.insert_key = false
-  config.vm.synced_folder "./sharedata", "/vagrant",  create: true, owner: "vagrant", group: "vagrant"
+#  config.vm.synced_folder "./sharedata", "/vagrant", create: true, owner: "vagrant", group: "vagrant"
   
   config.vm.network "private_network", ip: "192.168.245.101"
   config.vm.hostname = "centos7"
@@ -16,22 +16,20 @@ config.vm.box = "centos/7"
   end
 
   config.vm.provision "shell", inline: <<-SHELL
-    echo "Provision is starting ..."
-    date
-    echo "\n"
-  
+    echo "$(date "+%Y/%m/%d %H:%M:%S") Provision is starting ..."
+
+    echo "$(date "+%Y/%m/%d %H:%M:%S") [TimeZone] TimeZone is changed to Asia/Tokyo."
     timedatectl set-timezone Asia/Tokyo
-    echo "[TimeZone] TimeZone is changed to Asia/Tokyo."
     timedatectl
     echo "\n"
   
-    echo "[SELinux] SELinux is changed to disabled."
+    echo "$(date "+%Y/%m/%d %H:%M:%S") [SELinux] SELinux is changed to disabled."
     setenforce 0
     sed -i -e "s|#SELINUX=.*|SELINUX=disabled|" /etc/selinux/config
     sestatus
     echo "\n"
-  
-    echo "[Yum] All packages update."
+    
+    echo "$(date "+%Y/%m/%d %H:%M:%S") [Yum] All packages update."
     yum -y update
   SHELL
 

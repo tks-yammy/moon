@@ -4,7 +4,7 @@ config.vm.box = "centos/7"
 #config.disksize.size = '20GB'
 
   config.ssh.insert_key = false
-#  config.vm.synced_folder "./sharedata", "/vagrant",  create: true, owner: "vagrant", group: "vagrant"
+#  config.vm.synced_folder "./sharedata", "/vagrant", create: true, owner: "vagrant", group: "vagrant"
 
   config.vm.network "private_network", ip: "192.168.245.104"
   config.vm.hostname = "mysql56"
