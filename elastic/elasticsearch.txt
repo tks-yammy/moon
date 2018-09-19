@@ -1,0 +1,747 @@
+■インデックス一覧の確認
+curl 'localhost:9200/_cat/indices?v'
+curl 'localhost:9200/_cat/indices?v&s=index'
+
+■インデックスの作成
+curl -H 'Content-Type: application/json' -XPUT 'localhost:9200/**indexname**'  -d @**filename** |python -mjson.tool
+
+■インデックス定義の確認
+curl 'localhost:9200/**indexname**'
+
+■インデックスの削除
+curl -X DELETE 'localhost:9200/**indexname**'
+
+
+■バルク・インサート
+curl -H 'Content-Type: application/x-ndjson' -XPOST 'localhost:9200/index名/type名/_bulk?pretty' --data-binary @JSONファイル名
+#curl -H 'Content-Type: application/x-ndjson' -XPOST 'localhost:9200/index名/type名/_bulk' --data-binary @JSONファイル名
+
+
+====================================================================================
+
+■■日付型の動作検証
+
+■インデックスの作成
+curl -H 'Content-Type: application/json' -XPUT 'localhost:9200/date_no_format' -d @date_no_format.json |python -mjson.tool
+curl -H 'Content-Type: application/json' -XPUT 'localhost:9200/date_format_all' -d @date_format_all.json |python -mjson.tool
+curl -H 'Content-Type: application/json' -XPUT 'localhost:9200/date_format_yyyy-mm-dd_hhmmss' -d @date_format_yyyy-MM-dd_HHmmss.json |python -mjson.tool
+curl -H 'Content-Type: application/json' -XPUT 'localhost:9200/date_format_yyyy-mm-dd' -d @date_format_yyyy-MM-dd.json |python -mjson.tool
+
+
+■インデックスの確認
+curl 'localhost:9200/_cat/indices?v'
+curl 'localhost:9200/date_no_format/_mapping?pretty'
+curl 'localhost:9200/date_format_all/_mapping?pretty'
+curl 'localhost:9200/date_format_yyyy-mm-dd_hhmmss/_mapping?pretty'
+curl 'localhost:9200/date_format_yyyy-mm-dd/_mapping?pretty'
+
+
+■ドキュメントのPUT
+curl -H 'Content-Type: application/json' -XPUT 'localhost:9200/date_no_format/doc/1'  -d '{ "create_date": "2015-01-01" }'  |python -mjson.tool
+curl -H 'Content-Type: application/json' -XPUT 'localhost:9200/date_no_format/doc/2'  -d '{ "create_date": "2016-02-02 12:00:00" }'  |python -mjson.tool
+curl -H 'Content-Type: application/json' -XPUT 'localhost:9200/date_no_format/doc/3'  -d '{ "create_date": 1420070400001 }'  |python -mjson.tool
+curl 'localhost:9200/date_no_format/_search?pretty'
+
+
+curl -H 'Content-Type: application/json' -XPUT 'localhost:9200/date_format_all/doc/1'  -d '{ "create_date": "2015-01-01" }'  |python -mjson.tool
+curl -H 'Content-Type: application/json' -XPUT 'localhost:9200/date_format_all/doc/2'  -d '{ "create_date": "2016-02-02 12:00:00" }'  |python -mjson.tool
+curl -H 'Content-Type: application/json' -XPUT 'localhost:9200/date_format_all/doc/3'  -d '{ "create_date": 1420070400001 }'  |python -mjson.tool
+curl 'localhost:9200/date_format_all/_search?pretty'
+
+curl -H 'Content-Type: application/json' -XPUT 'localhost:9200/date_format_yyyy-mm-dd_hhmmss/doc/1'  -d '{ "create_date": "2015-01-01" }'  |python -mjson.tool
+curl -H 'Content-Type: application/json' -XPUT 'localhost:9200/date_format_yyyy-mm-dd_hhmmss/doc/2'  -d '{ "create_date": "2016-02-02 12:00:00" }'  |python -mjson.tool
+curl -H 'Content-Type: application/json' -XPUT 'localhost:9200/date_format_yyyy-mm-dd_hhmmss/doc/3'  -d '{ "create_date": 1420070400001 }'  |python -mjson.tool
+curl 'localhost:9200/date_format_yyyy-mm-dd_hhmmss/_search?pretty'
+
+curl -H 'Content-Type: application/json' -XPUT 'localhost:9200/date_format_yyyy-mm-dd/doc/1'  -d '{ "create_date": "2015-01-01" }'  |python -mjson.tool
+curl -H 'Content-Type: application/json' -XPUT 'localhost:9200/date_format_yyyy-mm-dd/doc/2'  -d '{ "create_date": "2016-02-02 12:00:00" }'  |python -mjson.tool
+curl -H 'Content-Type: application/json' -XPUT 'localhost:9200/date_format_yyyy-mm-dd/doc/3'  -d '{ "create_date": 1420070400001 }'  |python -mjson.tool
+curl 'localhost:9200/date_format_yyyy-mm-dd/_search?pretty'
+
+
+実行例：
+
+## インデックスの作成
+[root@vm-elasticsearch pub]# curl -H 'Content-Type: application/json' -XPUT 'localhost:9200/date_no_format'  -d @date_no_format.json |python -mjson.tool
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100   195  100    73  100   122    774   1295 --:--:-- --:--:-- --:--:--  1297
+{
+    "acknowledged": true,
+    "index": "date_no_format",
+    "shards_acknowledged": true
+}
+[root@vm-elasticsearch pub]# curl -H 'Content-Type: application/json' -XPUT 'localhost:9200/date_format_all'  -d @date_format_all.json |python -mjson.tool
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100   282  100    74  100   208    579   1628 --:--:-- --:--:-- --:--:--  1637
+{
+    "acknowledged": true,
+    "index": "date_format_all",
+    "shards_acknowledged": true
+}
+[root@vm-elasticsearch pub]# curl -H 'Content-Type: application/json' -XPUT 'localhost:9200/date_format_yyyy-mm-dd_hhmmss'  -d @date_format_yyyy-MM-dd_HHmmss.json |python -mjson.tool
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100   252  100    88  100   164    504    939 --:--:-- --:--:-- --:--:--   942
+{
+    "acknowledged": true,
+    "index": "date_format_yyyy-mm-dd_hhmmss",
+    "shards_acknowledged": true
+}
+[root@vm-elasticsearch pub]# curl -H 'Content-Type: application/json' -XPUT 'localhost:9200/date_format_yyyy-mm-dd'  -d @date_format_yyyy-MM-dd.json |python -mjson.tool
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100   236  100    81  100   155    787   1507 --:--:-- --:--:-- --:--:--  1519
+{
+    "acknowledged": true,
+    "index": "date_format_yyyy-mm-dd",
+    "shards_acknowledged": true
+}
+
+
+## インデックスの確認
+[root@vm-elasticsearch pub]# curl 'localhost:9200/_cat/indices?v'
+health status index                         uuid                   pri rep docs.count docs.deleted store.size pri.store.size
+green  open   .kibana                       qRhE_01aTLmW6x2jmPaHfw   1   0          7            1     47.4kb         47.4kb
+yellow open   price                         CTi0gYy-RPifLZLsyEWFVQ   5   1          1            0      3.7kb          3.7kb
+yellow open   date_format_all               BvXa4dDrSu2_BOUt4jhsrw   5   1          0            0      1.1kb          1.1kb
+yellow open   date_format_yyyy-mm-dd        35d1wkDgSJ2uwEAp_xsCOw   5   1          0            0      1.1kb          1.1kb
+yellow open   date_format_yyyy-mm-dd_hhmmss UTK6hTv8T0G-sSvukuKAkQ   5   1          0            0      1.1kb          1.1kb
+yellow open   shakespeare                   OZ_gOndSTp2H0KoYWZYD3Q   5   1     111396            0     21.7mb         21.7mb
+yellow open   customer                      QVaKdKI2RZyglSYpn7KGDg   5   1          2            0      7.6kb          7.6kb
+yellow open   bank                          HOiuVaz7TbyvQ5rWAg99QQ   5   1       1000            0    475.2kb        475.2kb
+yellow open   date_no_format                OGALtZt5QZmYRciqgQCu7A   5   1          0            0      1.1kb          1.1kb
+[root@vm-elasticsearch pub]# curl 'localhost:9200/date_no_format/_mapping?pretty'
+{
+  "date_no_format" : {
+    "mappings" : {
+      "doc" : {
+        "properties" : {
+          "create_date" : {
+            "type" : "date"
+          }
+        }
+      }
+    }
+  }
+}
+[root@vm-elasticsearch pub]# curl 'localhost:9200/date_format_all/_mapping?pretty'
+{
+  "date_format_all" : {
+    "mappings" : {
+      "doc" : {
+        "properties" : {
+          "create_date" : {
+            "type" : "date",
+            "format" : "yyyy-MM-dd HH:mm:ss || strict_date_optional_time|| epoch_millis"
+          }
+        }
+      }
+    }
+  }
+}
+[root@vm-elasticsearch pub]# curl 'localhost:9200/date_format_yyyy-mm-dd_hhmmss/_mapping?pretty'
+{
+  "date_format_yyyy-mm-dd_hhmmss" : {
+    "mappings" : {
+      "doc" : {
+        "properties" : {
+          "create_date" : {
+            "type" : "date",
+            "format" : "yyyy-MM-dd HH:mm:ss"
+          }
+        }
+      }
+    }
+  }
+}
+[root@vm-elasticsearch pub]# curl 'localhost:9200/date_format_yyyy-mm-dd/_mapping?pretty'
+{
+  "date_format_yyyy-mm-dd" : {
+    "mappings" : {
+      "doc" : {
+        "properties" : {
+          "create_date" : {
+            "type" : "date",
+            "format" : "yyyy-MM-dd"
+          }
+        }
+      }
+    }
+  }
+}
+
+
+
+## ドキュメントのPUT
+
+■date_no_format
+[root@vm-elasticsearch pub]# curl -H 'Content-Type: application/json' -XPUT 'localhost:9200/date_no_format/doc/1'  -d '{ "create_date": "2015-01-01" }'  |python -mjson.tool
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100   192  100   161  100    31  12222   2353 --:--:-- --:--:-- --:--:-- 12384
+{
+    "_id": "1",
+    "_index": "date_no_format",
+    "_primary_term": 1,
+    "_seq_no": 0,
+    "_shards": {
+        "failed": 0,
+        "successful": 1,
+        "total": 2
+    },
+    "_type": "doc",
+    "_version": 1,
+    "result": "created"
+}
+[root@vm-elasticsearch pub]# curl -H 'Content-Type: application/json' -XPUT 'localhost:9200/date_no_format/doc/2'  -d '{ "create_date": "2016-02-02 12:00:00" }'  |python -mjson.tool
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100   362  100   322  100    40  34731   4314 --:--:-- --:--:-- --:--:-- 35777
+{
+    "error": {
+        "caused_by": {
+            "reason": "Invalid format: \"2016-02-02 12:00:00\" is malformed at \" 12:00:00\"",
+            "type": "illegal_argument_exception"
+        },
+        "reason": "failed to parse [create_date]",
+        "root_cause": [
+            {
+                "reason": "failed to parse [create_date]",
+                "type": "mapper_parsing_exception"
+            }
+        ],
+        "type": "mapper_parsing_exception"
+    },
+    "status": 400
+}
+[root@vm-elasticsearch pub]# curl -H 'Content-Type: application/json' -XPUT 'localhost:9200/date_no_format/doc/3'  -d '{ "create_date": 1420070400001 }'  |python -mjson.tool
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100   193  100   161  100    32  15731   3126 --:--:-- --:--:-- --:--:-- 16100
+{
+    "_id": "3",
+    "_index": "date_no_format",
+    "_primary_term": 1,
+    "_seq_no": 0,
+    "_shards": {
+        "failed": 0,
+        "successful": 1,
+        "total": 2
+    },
+    "_type": "doc",
+    "_version": 1,
+    "result": "created"
+}
+[root@vm-elasticsearch pub]# curl 'localhost:9200/date_no_format/_search?pretty'
+{
+  "took" : 4,
+  "timed_out" : false,
+  "_shards" : {
+    "total" : 5,
+    "successful" : 5,
+    "skipped" : 0,
+    "failed" : 0
+  },
+  "hits" : {
+    "total" : 2,
+    "max_score" : 1.0,
+    "hits" : [
+      {
+        "_index" : "date_no_format",
+        "_type" : "doc",
+        "_id" : "1",
+        "_score" : 1.0,
+        "_source" : {
+          "create_date" : "2015-01-01"
+        }
+      },
+      {
+        "_index" : "date_no_format",
+        "_type" : "doc",
+        "_id" : "3",
+        "_score" : 1.0,
+        "_source" : {
+          "create_date" : 1420070400001
+        }
+      }
+    ]
+  }
+}
+
+
+■date_format_all
+[root@vm-elasticsearch pub]# curl -H 'Content-Type: application/json' -XPUT 'localhost:9200/date_format_all/doc/1'  -d '{ "create_date": "2015-01-01" }'  |python -mjson.tool
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100   193  100   162  100    31   6190   1184 --:--:-- --:--:-- --:--:--  6230
+{
+    "_id": "1",
+    "_index": "date_format_all",
+    "_primary_term": 1,
+    "_seq_no": 0,
+    "_shards": {
+        "failed": 0,
+        "successful": 1,
+        "total": 2
+    },
+    "_type": "doc",
+    "_version": 1,
+    "result": "created"
+}
+[root@vm-elasticsearch pub]# curl -H 'Content-Type: application/json' -XPUT 'localhost:9200/date_format_all/doc/2'  -d '{ "create_date": "2016-02-02 12:00:00" }'  |python -mjson.tool
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100   202  100   162  100    40   8359   2064 --:--:-- --:--:-- --:--:--  8526
+{
+    "_id": "2",
+    "_index": "date_format_all",
+    "_primary_term": 1,
+    "_seq_no": 0,
+    "_shards": {
+        "failed": 0,
+        "successful": 1,
+        "total": 2
+    },
+    "_type": "doc",
+    "_version": 1,
+    "result": "created"
+}
+[root@vm-elasticsearch pub]# curl -H 'Content-Type: application/json' -XPUT 'localhost:9200/date_format_all/doc/3'  -d '{ "create_date": 1420070400001 }'  |python -mjson.tool
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100   194  100   162  100    32   9467   1870 --:--:-- --:--:-- --:--:-- 10125
+{
+    "_id": "3",
+    "_index": "date_format_all",
+    "_primary_term": 1,
+    "_seq_no": 0,
+    "_shards": {
+        "failed": 0,
+        "successful": 1,
+        "total": 2
+    },
+    "_type": "doc",
+    "_version": 1,
+    "result": "created"
+}
+[root@vm-elasticsearch pub]# curl 'localhost:9200/date_format_all/_search?pretty'
+{
+  "took" : 2,
+  "timed_out" : false,
+  "_shards" : {
+    "total" : 5,
+    "successful" : 5,
+    "skipped" : 0,
+    "failed" : 0
+  },
+  "hits" : {
+    "total" : 3,
+    "max_score" : 1.0,
+    "hits" : [
+      {
+        "_index" : "date_format_all",
+        "_type" : "doc",
+        "_id" : "2",
+        "_score" : 1.0,
+        "_source" : {
+          "create_date" : "2016-02-02 12:00:00"
+        }
+      },
+      {
+        "_index" : "date_format_all",
+        "_type" : "doc",
+        "_id" : "1",
+        "_score" : 1.0,
+        "_source" : {
+          "create_date" : "2015-01-01"
+        }
+      },
+      {
+        "_index" : "date_format_all",
+        "_type" : "doc",
+        "_id" : "3",
+        "_score" : 1.0,
+        "_source" : {
+          "create_date" : 1420070400001
+        }
+      }
+    ]
+  }
+}
+
+
+■date_format_yyyy-mm-dd_hhmmss
+[root@vm-elasticsearch pub]# curl -H 'Content-Type: application/json' -XPUT 'localhost:9200/date_format_yyyy-mm-dd_hhmmss/doc/1'  -d '{ "create_date": "2015-01-01" }'  |python -mjson.tool
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100   327  100   296  100    31  12187   1276 --:--:-- --:--:-- --:--:-- 12333
+{
+    "error": {
+        "caused_by": {
+            "reason": "Invalid format: \"2015-01-01\" is too short",
+            "type": "illegal_argument_exception"
+        },
+        "reason": "failed to parse [create_date]",
+        "root_cause": [
+            {
+                "reason": "failed to parse [create_date]",
+                "type": "mapper_parsing_exception"
+            }
+        ],
+        "type": "mapper_parsing_exception"
+    },
+    "status": 400
+}
+[root@vm-elasticsearch pub]# curl -H 'Content-Type: application/json' -XPUT 'localhost:9200/date_format_yyyy-mm-dd_hhmmss/doc/2'  -d '{ "create_date": "2016-02-02 12:00:00" }'  |python -mjson.tool
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100   216  100   176  100    40   7173   1630 --:--:-- --:--:-- --:--:--  7333
+{
+    "_id": "2",
+    "_index": "date_format_yyyy-mm-dd_hhmmss",
+    "_primary_term": 1,
+    "_seq_no": 0,
+    "_shards": {
+        "failed": 0,
+        "successful": 1,
+        "total": 2
+    },
+    "_type": "doc",
+    "_version": 1,
+    "result": "created"
+}
+[root@vm-elasticsearch pub]# curl -H 'Content-Type: application/json' -XPUT 'localhost:9200/date_format_yyyy-mm-dd_hhmmss/doc/3'  -d '{ "create_date": 1420070400001 }'  |python -mjson.tool
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100   343  100   311  100    32  31963   3288 --:--:-- --:--:-- --:--:-- 34555
+{
+    "error": {
+        "caused_by": {
+            "reason": "Invalid format: \"1420070400001\" is malformed at \"0001\"",
+            "type": "illegal_argument_exception"
+        },
+        "reason": "failed to parse [create_date]",
+        "root_cause": [
+            {
+                "reason": "failed to parse [create_date]",
+                "type": "mapper_parsing_exception"
+            }
+        ],
+        "type": "mapper_parsing_exception"
+    },
+    "status": 400
+}
+[root@vm-elasticsearch pub]# curl 'localhost:9200/date_format_yyyy-mm-dd_hhmmss/_search?pretty'
+{
+  "took" : 2,
+  "timed_out" : false,
+  "_shards" : {
+    "total" : 5,
+    "successful" : 5,
+    "skipped" : 0,
+    "failed" : 0
+  },
+  "hits" : {
+    "total" : 1,
+    "max_score" : 1.0,
+    "hits" : [
+      {
+        "_index" : "date_format_yyyy-mm-dd_hhmmss",
+        "_type" : "doc",
+        "_id" : "2",
+        "_score" : 1.0,
+        "_source" : {
+          "create_date" : "2016-02-02 12:00:00"
+        }
+      }
+    ]
+  }
+}
+
+
+■date_format_yyyy-mm-dd
+[root@vm-elasticsearch pub]# curl -H 'Content-Type: application/json' -XPUT 'localhost:9200/date_format_yyyy-mm-dd/doc/1'  -d '{ "create_date": "2015-01-01" }'  |python -mjson.tool
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100   200  100   169  100    31   6581   1207 --:--:-- --:--:-- --:--:--  6760
+{
+    "_id": "1",
+    "_index": "date_format_yyyy-mm-dd",
+    "_primary_term": 1,
+    "_seq_no": 0,
+    "_shards": {
+        "failed": 0,
+        "successful": 1,
+        "total": 2
+    },
+    "_type": "doc",
+    "_version": 1,
+    "result": "created"
+}
+[root@vm-elasticsearch pub]# curl -H 'Content-Type: application/json' -XPUT 'localhost:9200/date_format_yyyy-mm-dd/doc/2'  -d '{ "create_date": "2016-02-02 12:00:00" }'  |python -mjson.tool
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100   362  100   322  100    40  13638   1694 --:--:-- --:--:-- --:--:-- 14000
+{
+    "error": {
+        "caused_by": {
+            "reason": "Invalid format: \"2016-02-02 12:00:00\" is malformed at \" 12:00:00\"",
+            "type": "illegal_argument_exception"
+        },
+        "reason": "failed to parse [create_date]",
+        "root_cause": [
+            {
+                "reason": "failed to parse [create_date]",
+                "type": "mapper_parsing_exception"
+            }
+        ],
+        "type": "mapper_parsing_exception"
+    },
+    "status": 400
+}
+[root@vm-elasticsearch pub]# curl -H 'Content-Type: application/json' -XPUT 'localhost:9200/date_format_yyyy-mm-dd/doc/3'  -d '{ "create_date": 1420070400001 }'  |python -mjson.tool
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100   343  100   311  100    32  11800   1214 --:--:-- --:--:-- --:--:-- 11961
+{
+    "error": {
+        "caused_by": {
+            "reason": "Invalid format: \"1420070400001\" is malformed at \"0001\"",
+            "type": "illegal_argument_exception"
+        },
+        "reason": "failed to parse [create_date]",
+        "root_cause": [
+            {
+                "reason": "failed to parse [create_date]",
+                "type": "mapper_parsing_exception"
+            }
+        ],
+        "type": "mapper_parsing_exception"
+    },
+    "status": 400
+}
+[root@vm-elasticsearch pub]# curl 'localhost:9200/date_format_yyyy-mm-dd/_search?pretty'
+{
+  "took" : 3,
+  "timed_out" : false,
+  "_shards" : {
+    "total" : 5,
+    "successful" : 5,
+    "skipped" : 0,
+    "failed" : 0
+  },
+  "hits" : {
+    "total" : 1,
+    "max_score" : 1.0,
+    "hits" : [
+      {
+        "_index" : "date_format_yyyy-mm-dd",
+        "_type" : "doc",
+        "_id" : "1",
+        "_score" : 1.0,
+        "_source" : {
+          "create_date" : "2015-01-01"
+        }
+      }
+    ]
+  }
+}
+
+
+
+
+■Bulkインサート
+[root@vm-elasticsearch pub]# curl -H 'Content-Type: application/x-ndjson' -XPOST 'localhost:9200/date_format_all/doc/_bulk?pretty' --data-binary @date.jsonl
+{
+  "took" : 31,
+  "errors" : false,
+  "items" : [
+    {
+      "index" : {
+        "_index" : "date_format_all",
+        "_type" : "doc",
+        "_id" : "101",
+        "_version" : 1,
+        "result" : "created",
+        "_shards" : {
+          "total" : 2,
+          "successful" : 1,
+          "failed" : 0
+        },
+        "_seq_no" : 1,
+        "_primary_term" : 1,
+        "status" : 201
+      }
+    },
+    {
+      "index" : {
+        "_index" : "date_format_all",
+        "_type" : "doc",
+        "_id" : "102",
+        "_version" : 1,
+        "result" : "created",
+        "_shards" : {
+          "total" : 2,
+          "successful" : 1,
+          "failed" : 0
+        },
+        "_seq_no" : 1,
+        "_primary_term" : 1,
+        "status" : 201
+      }
+    },
+    {
+      "index" : {
+        "_index" : "date_format_all",
+        "_type" : "doc",
+        "_id" : "103",
+        "_version" : 1,
+        "result" : "created",
+        "_shards" : {
+          "total" : 2,
+          "successful" : 1,
+          "failed" : 0
+        },
+        "_seq_no" : 2,
+        "_primary_term" : 1,
+        "status" : 201
+      }
+    },
+    {
+      "index" : {
+        "_index" : "date_format_all",
+        "_type" : "doc",
+        "_id" : "104",
+        "_version" : 1,
+        "result" : "created",
+        "_shards" : {
+          "total" : 2,
+          "successful" : 1,
+          "failed" : 0
+        },
+        "_seq_no" : 3,
+        "_primary_term" : 1,
+        "status" : 201
+      }
+    },
+    {
+      "index" : {
+        "_index" : "date_format_all",
+        "_type" : "doc",
+        "_id" : "105",
+        "_version" : 1,
+        "result" : "created",
+        "_shards" : {
+          "total" : 2,
+          "successful" : 1,
+          "failed" : 0
+        },
+        "_seq_no" : 0,
+        "_primary_term" : 1,
+        "status" : 201
+      }
+    }
+  ]
+}
+[root@vm-elasticsearch pub]# 
+[root@vm-elasticsearch pub]# 
+[root@vm-elasticsearch pub]# curl 'localhost:9200/date_format_all/_search?pretty'
+{
+  "took" : 5,
+  "timed_out" : false,
+  "_shards" : {
+    "total" : 5,
+    "successful" : 5,
+    "skipped" : 0,
+    "failed" : 0
+  },
+  "hits" : {
+    "total" : 9,
+    "max_score" : 1.0,
+    "hits" : [
+      {
+        "_index" : "date_format_all",
+        "_type" : "doc",
+        "_id" : "105",
+        "_score" : 1.0,
+        "_source" : {
+          "create_date" : "2016-10-10T12:00:00+09:00"
+        }
+      },
+      {
+        "_index" : "date_format_all",
+        "_type" : "doc",
+        "_id" : "5",
+        "_score" : 1.0,
+        "_source" : {
+          "create_date" : "2016-10-10T12:00:00+09:00"
+        }
+      },
+      {
+        "_index" : "date_format_all",
+        "_type" : "doc",
+        "_id" : "101",
+        "_score" : 1.0,
+        "_source" : {
+          "create_date" : "2015-01-01"
+        }
+      },
+      {
+        "_index" : "date_format_all",
+        "_type" : "doc",
+        "_id" : "103",
+        "_score" : 1.0,
+        "_source" : {
+          "create_date" : 1420070400001
+        }
+      },
+      {
+        "_index" : "date_format_all",
+        "_type" : "doc",
+        "_id" : "104",
+        "_score" : 1.0,
+        "_source" : {
+          "create_date" : "2016-05-05T22:00:00"
+        }
+      },
+      {
+        "_index" : "date_format_all",
+        "_type" : "doc",
+        "_id" : "2",
+        "_score" : 1.0,
+        "_source" : {
+          "create_date" : "2016-02-02 12:00:00"
+        }
+      },
+      {
+        "_index" : "date_format_all",
+        "_type" : "doc",
+        "_id" : "1",
+        "_score" : 1.0,
+        "_source" : {
+          "create_date" : "2015-01-01"
+        }
+      },
+      {
+        "_index" : "date_format_all",
+        "_type" : "doc",
+        "_id" : "3",
+        "_score" : 1.0,
+        "_source" : {
+          "create_date" : 1420070400001
+        }
+      },
+      {
+        "_index" : "date_format_all",
+        "_type" : "doc",
+        "_id" : "102",
+        "_score" : 1.0,
+        "_source" : {
+          "create_date" : "2016-02-02 12:00:00"
+        }
+      }
+    ]
+  }
+}
